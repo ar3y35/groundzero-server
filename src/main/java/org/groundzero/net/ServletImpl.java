@@ -7,11 +7,12 @@ import java.io.IOException;
  * @author Albert Reyes
  */
 public class ServletImpl implements Servlet {
-    protected ServletConfig config;
-    protected String info;
+    private ServletConfig config;
+    private String info;
 
     public void init(ServletConfig servletConfig) throws ServletException {
-        System.out.println("init");
+        config = servletConfig;
+        info = config.getServletName();
     }
 
     public ServletConfig getServletConfig() {
@@ -27,6 +28,8 @@ public class ServletImpl implements Servlet {
     }
 
     public void destroy() {
-        System.out.println("destroy");
+        config = null;
+        info =null;
     }
+
 }

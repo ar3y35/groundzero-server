@@ -2,6 +2,8 @@ package org.groundzero.net;
 
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,10 +24,11 @@ public class ServletContextImpl implements ServletContext {
     protected String serverInfo;
     protected String contextName;
     protected Map<String, Object> attributes;
+    protected Map<String, String> parameters;
 
 
     public String getContextPath() {
-        return null;
+        return contextPath;
     }
 
     public ServletContext getContext(String s) {
@@ -57,11 +60,17 @@ public class ServletContextImpl implements ServletContext {
     }
 
     public URL getResource(String s) throws MalformedURLException {
-        return null;
+        return new URL (s);
     }
 
     public InputStream getResourceAsStream(String s) {
-        return null;
+        InputStream in = null;
+        try {
+            in = new FileInputStream(s);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return in;
     }
 
     public RequestDispatcher getRequestDispatcher(String s) {
@@ -91,8 +100,9 @@ public class ServletContextImpl implements ServletContext {
 
     }
 
+    @Deprecated
     public void log(Exception e, String s) {
-
+        throw new UnsupportedOperationException("Method log(Exception e, String s) is deprecated as of Servlet API 2.1");
     }
 
     public void log(String s, Throwable throwable) {
@@ -108,7 +118,7 @@ public class ServletContextImpl implements ServletContext {
     }
 
     public String getInitParameter(String s) {
-        return null;
+        return parameters.get(s);
     }
 
     public Enumeration<String> getInitParameterNames() {
@@ -116,15 +126,25 @@ public class ServletContextImpl implements ServletContext {
     }
 
     public boolean setInitParameter(String s, String s1) {
-        return false;
+        return parameters.put(s,s1) == null ?  true:false;
     }
 
     public Object getAttribute(String s) {
         return attributes.get(s);
     }
 
-    public Enumeration<String> getAttributeNames() {
-        return null;
+    public Enumeration getAttributeNames() {
+        return new Enumeration<String>() {
+            @Override
+            public boolean hasMoreElements() {
+                return attributes.keySet().iterator().hasNext();
+            }
+
+            @Override
+            public String nextElement() {
+                return attributes.keySet().iterator().next();
+            }
+        };
     }
 
     public void setAttribute(String s, Object o) {

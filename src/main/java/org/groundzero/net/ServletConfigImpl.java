@@ -3,6 +3,7 @@ package org.groundzero.net;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,6 +33,17 @@ public class ServletConfigImpl implements ServletConfig {
     }
 
     public Enumeration getInitParameterNames() {
-        return null;
+        Enumeration<String> e = new Enumeration<String>() {
+            @Override
+            public boolean hasMoreElements() {
+                return parameters.keySet().iterator().hasNext();
+            }
+            @Override
+            public String nextElement() {
+                return parameters.keySet().iterator().next();
+            }
+        };
+
+        return e;
     }
 }
