@@ -6,39 +6,30 @@ import java.net.Socket;
 import java.util.Objects;
 
 /**
- * Listens for internet traffic on a specified address/port.  A connection is created and delegated to a processor for
- * all requests directed at this listener.  This class is not thread safe.
+ * Listens for internet traffic on a specified address/port.  When traffic is received a Socket is created and routed
+ * somewhere else freeing this class to listen for more traffic.  This class is not thread safe.  This class will not
+ * close or modify the required ServerSocket.
  *
  * @author Albert Reyes
  * @since Java 1.8
  */
 public class WebListener implements Listener {
     protected final ServerSocket socket;
+    protected final ConnectionQueue connections;
 
-    public WebListener (final ServerSocket s) {
-        socket = Objects.requireNonNull(s);
+    public WebListener (final ServerSocket s, final ConnectionQueue q) {
+        socket = Objects.requireNonNull(s, "ServerSocket is required");
+        connections = Objects.requireNonNull(q, "ConnectionQueue is required");
     }
 
-    public void activate() {
-        try {
-            System.out.println("Waiting for connection...");
-            Socket connection = socket.accept();
-            System.out.println("Socket connected " + connection.getInetAddress().getHostAddress() + " " + connection.getInetAddress().getHostName());
-        } catch (IOException e) {
+    public void listen() {
+        while (!socket.isClosed()) {
             try {
-                socket.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                Socket connection = socket.accept();
+                connections.queue(connection);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            e.printStackTrace();
-        }
-    }
-
-    public void deactivate() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
