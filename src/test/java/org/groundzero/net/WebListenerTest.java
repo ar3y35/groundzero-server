@@ -1,5 +1,6 @@
 package org.groundzero.net;
 
+import org.groundzero.net.protocol.FactoryWebRequestImpl;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ public class WebListenerTest {
         ServerSocket socket = null;
         try {
             socket = new ServerSocket(8080);
-            ConnectionQueue pool = new WebConnectionQueue(Executors.newFixedThreadPool(10));
+            ConnectionQueue pool = new WebConnectionQueue(Executors.newFixedThreadPool(10), new FactoryWebRequestImpl());
             new WebListener(socket, pool).listen();
         }finally {
             if (socket!=null) {
