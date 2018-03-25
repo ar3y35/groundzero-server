@@ -1,9 +1,8 @@
-package org.groundzero.net;
+package org.rawdoughnuts.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Objects;
 
 /**
  * Listens for internet traffic on a specified address/port.  When traffic is received a Socket is created and routed
@@ -11,22 +10,23 @@ import java.util.Objects;
  * close or modify the required ServerSocket.
  *
  * @author Albert Reyes
- * @since Java 1.8
  */
-public class WebListener implements Listener {
+public class ServerSocketListener implements Listener {
     protected final ServerSocket socket;
-    protected final ConnectionQueue connections;
+    protected final Router connections;
 
-    public WebListener (final ServerSocket s, final ConnectionQueue q) {
-        socket = Objects.requireNonNull(s, "ServerSocket is required");
-        connections = Objects.requireNonNull(q, "ConnectionQueue is required");
+    public ServerSocketListener(final ServerSocket s, final Router r) {
+        if (s==null) {throw new NullPointerException("ServerSocket is required");}
+        if (r==null) {throw new NullPointerException("Router is required");}
+        socket = s;
+        connections = r;
     }
 
     public void listen() {
         while (!socket.isClosed()) {
             try {
-                Socket connection = socket.accept();
-                connections.queue(connection);
+                Socket request = socket.accept();
+                connections.route(request);
             } catch (IOException e) {
                 throw new RuntimeException("The listener stopped because of an exception", e);
             }
