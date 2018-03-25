@@ -14,11 +14,9 @@ public class ThreadPoolRouter implements Router {
         container = c;
     }
 
-    @Override
     public void route(final Socket s) {
-        ResourceRequester request = container.accept(s);
+        final ResourceRequester request = container.accept(s);
         pool.execute(new Runnable() {
-            @Override
             public void run() {
                 try {
                     request.fulfill();
