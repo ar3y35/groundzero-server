@@ -5,6 +5,6 @@ import java.net.Socket;
 /**
  *
  */
-public interface Container {
-    ResourceRequester accept (Socket s);
+public interface Server {
+    void accept (Socket s);
 }

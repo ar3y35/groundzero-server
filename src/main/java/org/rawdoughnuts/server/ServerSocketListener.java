@@ -13,20 +13,20 @@ import java.net.Socket;
  */
 public class ServerSocketListener implements Listener {
     protected final ServerSocket socket;
-    protected final Router connections;
+    protected final Router router;
 
     public ServerSocketListener(final ServerSocket s, final Router r) {
         if (s==null) {throw new NullPointerException("ServerSocket is required");}
         if (r==null) {throw new NullPointerException("Router is required");}
         socket = s;
-        connections = r;
+        router = r;
     }
 
     public void listen() {
         while (!socket.isClosed()) {
             try {
                 Socket request = socket.accept();
-                connections.route(request);
+                router.route(request);
             } catch (IOException e) {
                 throw new RuntimeException("The listener stopped because of an exception", e);
             }
